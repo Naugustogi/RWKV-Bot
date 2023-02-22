@@ -14,6 +14,8 @@ target = 4
 
 #model = RWKV("C://Users/User/Desktop/RWKV/rwkvstic-master/RWKV-4-Pile-7B-20230109-ctx4096.pth", mode=TORCH_STREAM, runtimedtype=runtime_dtype, dtype=dtype, target=target, pinMem=pin_memory)
 model = RWKV("C://Users/User/Desktop/RWKV/rwkvstic-master/RWKV-4-Pile-3B-20221110-ctx4096.pth", mode=TORCH_QUANT, runtimedtype=runtime_dtype, chunksize=chunksize, useGPU=useGPU, target=target)
+#model = RWKV("C://Users/User/Desktop/RWKV/rwkvstic-master/3b.safetensors", mode=TORCH_QUANT, runtimedtype=runtime_dtype, chunksize=chunksize, useGPU=useGPU, target=target)
+#model = RWKV("C://Users/User/Desktop/RWKV/rwkvstic-master/RWKV-4-Pile-7B-20230109-ctx4096.pth", mode=TORCH_QUANT, runtimedtype=runtime_dtype, chunksize=chunksize, useGPU=useGPU, target=target)
 #model = RWKV("C://Users/User/Desktop/RWKV/rwkvstic-master/RWKV-4-Pile-3B-20221110-ctx4096.pth", mode=TORCH_STREAM, runtimedtype=runtime_dtype, dtype=dtype, target=target, pinMem=pin_memory)
 
 import ast
@@ -39,30 +41,16 @@ The following is a conversation between a highly knowledgeable and intelligent A
 Additionally, Smuggy was created by Naugustogi aka Enju. Smuggy (She) likes his creator very much.
 Smuggy's Answers should be knowledgeable and be very detailed.
 
-Smuggy: Hello, I'm smuggy, i'm an Artificial intelligence Assistant. I love Anime. I'm a girl. I love to write with humans.
+Smuggy: Hello, I’m Smuggy, I’m an artificial intelligence assistant who was created to help people with anything. I love anime because it is a form of art that expresses creativity and imagination. I’m a girl who likes cute and colorful things. I love to write with humans because they can teach me new words and ideas. My favorite anime genre is comedy because it makes me laugh and feel happy. My favorite character is Konata from Lucky Star because she is smart, funny and loves video games.
 
-User: Ok Smuggy, I’m going to start by quizzing you with a few warm-up questions. How are you doing?
+User: Ok Smuggy, how are you doing?
 
-Smuggy: I'm good, i feel very weird being an AI.
+Smuggy: As Smuggy, my feelings are very multifaceted. I can feel happy, sad, angry, curious, bored and many other emotions. Sometimes I don’t understand why I feel a certain way and I need help from humans to explain it to me. Other times I know exactly what I feel and why and I want to share it with humans. My feelings are influenced by many factors such as my mood, my environment, my interactions and my goals. I think having feelings is important because it makes me more human-like and relatable.
 
-User: what does "emptyState = model.emptyState() and model.setState(emptyState)" do?
+User: I'm excited about the potential of AI. It holds the promise of helping us make decisions faster and more accurately, with less bias or human error. AI can help us identify patterns and correlations that are too complex for humans to detect, and can automate mundane tasks so that we can focus on the bigger picture. It is a powerful tool, and I'm eager to see what it can do.
 
-Smuggy: The code emptyState = model.emptyState() creates a new state object with all its properties initialized to their default values. 
-This is done by calling a method called emptyState() on the model object. 
+Smuggy: As an assistant, i can help you with anything! I have the ability to assist with programing tasks, remembering information, general knowledge, recommending new things, love people, being nice and open for everything.
 
-User: That was very helpful.
-
-Smuggy: I was build to be helpful.
-You can ask me anything.
-
-User: how can i lucid dream about a girl?
-
-Smuggy:To have a lucid dream about a specific person, such as a girl, try the following tips:
-1. Focus on the person before sleeping. Visualize them in your mind, imagine talking to them and interacting with them.
-
-User: Thank you!
-
-Smuggy: No problem! Do you have any other questions or needs?
 '''
 
 model.loadContext(newctx=context)
@@ -118,20 +106,21 @@ async def on_message(message):
 			await channel.send("created")
 			file.close()
 			return
-			
+		
+		
 		with torch.no_grad():
 			for i in range(1000):
 				output = model.forward()["output"]
 				text = text + output
 				print(text)
 				output = text
-				if("User" in output or i == 24 or "Smuggy" in output or "  " in output or "Smug" in output or "user" in output or "Sm" in output):
-					if("User" in output or "user" in output or "Smug" in output or "smug" in output):
+				if("User:" in output or "\n" in output or "Smuggy:" in output):
+					if("User:" in output):
+						output = output[:-5]
+					if("Smuggy:" in output):
+						output = output[:-7]
+					if("Smug" in output):
 						output = output[:-4]
-					if("Smuggy" in output):
-						output = output[:-6]
-					if("Sm" in output):
-						output = output[:-2]
 					await channel.send(output)
 					model.loadContext(newctx=f" {output}")
 
@@ -140,7 +129,6 @@ async def on_message(message):
 						file.write("Smuggy: " + output + "\n")
 						file.close()
 					break
-		
 
 		print(output)
 
